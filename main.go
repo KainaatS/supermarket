@@ -3,18 +3,20 @@ package main
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type ScannedItems struct {
-	SKU        map[string]int
+	SKUs       map[string]int
 	TotalPrice int
 }
 
 type Items struct {
-	SKU map[string]Prices
+	SKUs map[string]Prices
 }
 
 type Prices struct {
@@ -72,6 +74,25 @@ func main() {
 }
 
 func (c *ScannedItems) Scan(SKU string) (err error) {
+
+	(*c).SKUs = map[string]int{}
+	SKUs := strings.Split(SKU, ",")
+
+	for _, sku := range SKUs {
+
+		if _, exists := Inventory.SKUs[sku]; !exists {
+			err = errors.New(fmt.Sprintf("invalid sku: %s", sku))
+			return
+		}
+
+		if val, exists := c.SKUs[sku]; exists {
+			c.SKUs[sku] = val + 1
+		} else {
+			c.SKUs[sku] = 1
+		}
+	}
+
+	fmt.Println((*c).SKUs)
 
 	return
 }
