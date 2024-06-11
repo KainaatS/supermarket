@@ -64,7 +64,17 @@ func main() {
 			err := Checkout.Scan(text)
 			if err != nil {
 				fmt.Println(err)
-				fmt.Println("Please try again")
+				fmt.Println("Please try again:")
+
+			} else {
+				var total int
+				total, err = Checkout.GetTotalPrice()
+
+				if err == nil {
+					fmt.Println(fmt.Sprintf("Your total is: %d", total))
+				} else {
+					fmt.Println(err)
+				}
 			}
 
 		} else {
@@ -92,7 +102,22 @@ func (c *ScannedItems) Scan(SKU string) (err error) {
 		}
 	}
 
-	fmt.Println((*c).SKUs)
+	return
+}
+
+func (c *ScannedItems) GetTotalPrice() (totalPrice int, err error) {
+
+	for sku, quantity := range (*c).SKUs {
+
+		if Inventory.SKUs[sku].Offers.Quantity != 0 && quantity >= Inventory.SKUs[sku].Offers.Quantity {
+
+			totalPrice += Inventory.SKUs[sku].Offers.Price * (quantity / Inventory.SKUs[sku].Offers.Quantity)
+			totalPrice += Inventory.SKUs[sku].DefaultPrice * (quantity % Inventory.SKUs[sku].Offers.Quantity)
+
+		} else {
+			totalPrice += Inventory.SKUs[sku].DefaultPrice * quantity
+		}
+	}
 
 	return
 }
