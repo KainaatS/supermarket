@@ -1,11 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
+
+type ScannedItems struct {
+	SKU        map[string]int
+	TotalPrice int
+}
 
 type Items struct {
 	SKU map[string]Prices
@@ -43,5 +49,29 @@ func init() {
 }
 
 func main() {
+	var Checkout ScannedItems
 
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Println("Enter SKUs in a comma-seperate line or exit to quit: ")
+
+		scanner.Scan()
+
+		text := scanner.Text()
+		if text != "exit" {
+			err := Checkout.Scan(text)
+			if err != nil {
+				fmt.Println(err)
+				fmt.Println("Please try again")
+			}
+
+		} else {
+			break
+		}
+	}
+}
+
+func (c *ScannedItems) Scan(SKU string) (err error) {
+
+	return
 }
