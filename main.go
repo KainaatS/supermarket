@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+
+	cs "github.com/mitchellh/colorstring"
 )
 
 type ScannedItems struct {
@@ -54,23 +56,22 @@ func main() {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
-		fmt.Println("Enter SKUs in a comma-seperate line or exit to quit: ")
+		cs.Println("[blue]Enter SKUs in a comma-seperate line or exit to quit: ")
 
 		scanner.Scan()
 
 		text := scanner.Text()
 		if text != "exit" {
-			err := Checkout.Scan(text)
+			err := Checkout.Scan(strings.ToUpper(text))
 			if err != nil {
-				fmt.Println(err)
-				fmt.Println("Please try again:")
+				cs.Println(fmt.Sprintf("[red]%s", err))
 
 			} else {
 				var total int
 				total, err = Checkout.GetTotalPrice()
 
 				if err == nil {
-					fmt.Println(fmt.Sprintf("Your total is: %d", total))
+					cs.Println(fmt.Sprintf("[green]Your total is: [light_green]%d", total))
 				} else {
 					fmt.Println(err)
 				}
