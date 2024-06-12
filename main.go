@@ -30,7 +30,6 @@ type Prices struct {
 var Inventory Items
 
 func init() {
-
 	jsonFile, err := os.Open("inventory.json")
 
 	if err == nil {
